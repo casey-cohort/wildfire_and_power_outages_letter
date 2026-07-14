@@ -1,5 +1,17 @@
-## LP note: only 2024 has total_customers column!
-# Quickly identify the number of 8+ hour power outages by county in 2024
+# Identify whether counties experienced power outages in 2018 - 2025
+# 
+# A county experiences a power outage when either 5000+ customers or 
+#  25% of the estimated total customers in a county report outage 
+#  for 8 hours or more. 
+#
+# Only annual, statewide totals of customers were provided, and only
+#  through 2024. We therefore used the ACS to estimate the percentage
+#  of each state's households were in each county (annually), and assigned
+#  the statewide number of electric customers accordingly. When no 
+#  statewide total was reported (after 2024), we carried forward the 
+#  previous year's total. When no census estimates were available in 
+#  2025, we carried forward 2024's census data. 
+#
 
 # Libraries
 options(scipen = 999)
@@ -8,22 +20,80 @@ if (!require("pacman", quietly = TRUE)) {
 }
 pacman::p_load(tidyverse, dbplyr, here, lubridate, slider, data.table, fs, arrow, tidycensus)
 
+if(Sys.getenv('CENSUS_API_KEY') == '') stop("Install a Census API Key with tidycensus (https://walker-data.com/tidycensus/reference/census_api_key.html).")
+
 dir_create('data/processed')
 
 fips_codes <- tidycensus::fips_codes %>%
   transmute(county_fips = paste0(state_code, county_code), state, county)
 
+annual_cov <- fread('data/raw/eagle-i/coverage_history.csv') %>%
+  transmute(
+    year = lubridate::year(mdy(year)),
+    state,
+    total_customers
+  ) %>%
+  left_join(
+    fips_codes %>%
+      transmute(
+        state_fips = substr(county_fips, 1, 2),
+        state
+      ) %>%
+      distinct(),
+      by = c('state')
+    ) 
+
+# carry forward 2022 number of customers after 2022
+annual_cov <- annual_cov %>%
+  select(state, state_fips) %>%
+  distinct() %>%
+  cross_join(tibble(year = 2023:2025)) %>%
+  bind_rows(annual_cov) %>%
+  group_by(state_fips) %>%
+  arrange(year) %>%
+  fill(total_customers) %>%
+  ungroup() 
+
+eaglei_annual_files <- dir_ls(here('data/raw/eagle-i'), glob = '*eaglei_outages*csv')
+eaglei_annual_files <- eaglei_annual_files[which(as.numeric(str_extract(eaglei_annual_files, '[0-9]{4}')) >= 2018)]
 map(
-  dir_ls(here('data/raw/eagle-i'), glob = '*eaglei_outages*csv'),
+  eaglei_annual_files,
   function(eaglei_annual_file){
 
-    eaglei <- fread(eaglei_annual_file)
+    county_households <- suppressMessages(
+      get_acs(
+        geography = 'county', 
+        variables = 'B11001_001', 
+        year = pmin(2024, as.numeric(str_extract(eaglei_annual_file, '[0-9]{4}'))) # use 2024 ACS estimate since 2025 not yet avail
+      )
+    ) %>%
+      transmute(
+        fips_code = GEOID, 
+        state_fips = substr(fips_code, 1, 2),
+        year = as.numeric(str_extract(eaglei_annual_file, '[0-9]{4}')),
+        estimate,
+        moe
+      ) %>%
+      left_join(annual_cov, by = c('state_fips', 'year')) %>%
+      group_by(state_fips) %>%
+      mutate(
+        pct_state_households = estimate / sum(estimate),
+        est_total_customers = round(total_customers * pct_state_households)
+      ) %>%
+      ungroup() %>%
+      select(fips_code, est_total_customers)
 
+    eaglei <- read_csv(eaglei_annual_file, show_col_types = FALSE) %>%
+      mutate(fips_code = str_pad(fips_code, width = 5, pad = '0')) %>% 
+      left_join(county_households,  join_by(fips_code))
+
+    if('sum' %in% names(eaglei)) eaglei <- rename(eaglei, customers_out = sum) # fix inconsistent naming
+    
     # identify hours affected by outage
     eaglei <- eaglei %>%
-      select(-matches('total_customers')) %>% # this only appears sometimes
+      select(-matches('^total_customers$')) %>% # this only appears sometimes
       mutate(
-        outage_on = ifelse(customers_out > 5000, 1, 0), # can't do percentage most of the time -- just doing 5k for now
+        outage_on = ifelse(customers_out > 5000 | ((customers_out / est_total_customers) > .25), 1, 0), # outages with 5k people or 25% of the county's customers
         hour = round_date(run_start_time, unit = 'hour'),
         fips_code = str_pad(fips_code, 5, pad = '0')
       ) %>%
@@ -54,5 +124,4 @@ map(
   }
 ) %>%
   bind_rows() %>%
-  filter(day >= ymd('2018-01-01')) %>%
   write_parquet(here('data/processed/eagle-i.parquet'))
