@@ -1,7 +1,7 @@
 # Identify whether counties experienced power outages in 2018 - 2025
 # 
 # A county experiences a power outage when either 5000+ customers or 
-#  25% of the estimated total customers in a county report outage 
+#  1% of the estimated total customers in a county report outage 
 #  for 8 hours or more. 
 #
 # Only annual, statewide totals of customers were provided, and only
@@ -93,7 +93,7 @@ map(
     eaglei <- eaglei %>%
       select(-matches('^total_customers$')) %>% # this only appears sometimes
       mutate(
-        outage_on = ifelse(customers_out > 5000 | ((customers_out / est_total_customers) > .25), 1, 0), # outages with 5k people or 25% of the county's customers
+        outage_on = ifelse(customers_out > 5000 | ((customers_out / est_total_customers) > .01), 1, 0), # outages with 5k people or 25% of the county's customers
         hour = round_date(run_start_time, unit = 'hour'),
         fips_code = str_pad(fips_code, 5, pad = '0')
       ) %>%
