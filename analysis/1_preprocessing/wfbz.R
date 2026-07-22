@@ -9,7 +9,7 @@ options(scipen = 999)
 if (!require("pacman", quietly = TRUE)) {
   install.packages("pacman")
 }
-pacman::p_load(tidyverse, here, sf, arrow, tigris)
+pacman::p_load(tidyverse, here, fs, sf, arrow, tigris)
 
 dir_create('data/processed')
 

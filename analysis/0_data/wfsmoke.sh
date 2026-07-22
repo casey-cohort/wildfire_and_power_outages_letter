@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-DST="data/raw/wfsmoke/wfsmoke.zip"
+DST="data/raw/wfsmoke/wfsmoke.rds"
 mkdir -p $(dirname $DST)
-curl -Ls "https://www.dropbox.com/scl/fo/91k0aq80vp57qixkm508q/AOADXrl5470J9uGaxpkOniA/county?rlkey=nutebc9pn2vsupr0p9ks4k73u&subfolder_nav_tracking=1&st=6m7wqj6o&dl=1" -o $DST -z $DST
-unzip -u -d $(dirname $DST) $DST
+curl -Ls "https://www.dropbox.com/scl/fi/icblxmhbplhfql89bonmt/tigris_counties_smokePM_predictions_yearly_weighted_20060101-20241231.rds?rlkey=jxgdkubnr6smkf57or2mkytvp&st=y25j2nmw&e=1&dl=1" -o $DST -z $DST
