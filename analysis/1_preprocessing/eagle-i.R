@@ -13,7 +13,6 @@
 #  2025, we carried forward 2024's census data. 
 #
 
-# Libraries
 options(scipen = 999)
 if (!require("pacman", quietly = TRUE)) {
   install.packages("pacman")
@@ -22,12 +21,35 @@ pacman::p_load(tidyverse, dbplyr, here, lubridate, slider, data.table, fs, arrow
 
 if(Sys.getenv('CENSUS_API_KEY') == '') stop("Install a Census API Key with tidycensus (https://walker-data.com/tidycensus/reference/census_api_key.html).")
 
-dir_create('data/processed')
+dir_create(here('data/processed'))
+
+county_sf <- list(
+  `2018` = read_sf(here('data/raw/county/county_2018.geojson')),
+  `2019` = read_sf(here('data/raw/county/county_2019.geojson')),
+  `2020` = read_sf(here('data/raw/county/county_2020.geojson')),
+  `2021` = read_sf(here('data/raw/county/county_2021.geojson')),
+  `2022` = read_sf(here('data/raw/county/county_2021.geojson')),#using 2021 for subsequent years since other data sets don't use CT's new counties
+  `2023` = read_sf(here('data/raw/county/county_2021.geojson')), 
+  `2024` = read_sf(here('data/raw/county/county_2021.geojson'))
+) %>%
+  map(~select(.x, county_fips = GEOID)) %>%
+  map(~filter(.x, !(substr(county_fips, 1, 2) %in% c('02', '15', '72', '78')))) %>% # no AK, HI
+  st_drop_geometry() 
+
+county_days <- map2(
+  county_sf, 
+  c(2018:2024), 
+  ~expand_grid(
+    county_fips = .x$county_fips, 
+    day = seq.Date(ymd(paste(.y, '01', '01')), ymd(paste(.y, '12', '31')), by = 'days')
+  )
+) %>%
+  bind_rows() 
 
 fips_codes <- tidycensus::fips_codes %>%
   transmute(county_fips = paste0(state_code, county_code), state, county)
 
-annual_cov <- fread('data/raw/eagle-i/coverage_history.csv') %>%
+annual_cov <- fread(here('data/raw/eagle-i/coverage_history.csv')) %>%
   transmute(
     year = lubridate::year(mdy(year)),
     state,
@@ -47,7 +69,7 @@ annual_cov <- fread('data/raw/eagle-i/coverage_history.csv') %>%
 annual_cov <- annual_cov %>%
   select(state, state_fips) %>%
   distinct() %>%
-  cross_join(tibble(year = 2023:2025)) %>%
+  cross_join(tibble(year = 2023:2024)) %>%
   bind_rows(annual_cov) %>%
   group_by(state_fips) %>%
   arrange(year) %>%
@@ -55,8 +77,8 @@ annual_cov <- annual_cov %>%
   ungroup() 
 
 eaglei_annual_files <- dir_ls(here('data/raw/eagle-i'), glob = '*eaglei_outages*csv')
-eaglei_annual_files <- eaglei_annual_files[which(as.numeric(str_extract(eaglei_annual_files, '[0-9]{4}')) >= 2018)]
-map(
+eaglei_annual_files <- eaglei_annual_files[which(between(as.numeric(str_extract(eaglei_annual_files, '[0-9]{4}')), 2018, 2024))]
+eaglei <- map(
   eaglei_annual_files,
   function(eaglei_annual_file){
 
@@ -103,7 +125,7 @@ map(
     # add day indicator
     eaglei <- 
       eaglei %>%
-      mutate(day = round_date(hour, unit = 'day'))
+      mutate(day = as.Date(hour))
 
     # group by day and find if there are 8 consecutive hrs in that day
     eaglei <- eaglei %>%
@@ -124,4 +146,9 @@ map(
   }
 ) %>%
   bind_rows() %>%
-  write_parquet(here('data/processed/eagle-i.parquet'))
+  select(-c(state, county)) %>% 
+  mutate(outage = as.logical(outage)) %>% 
+  filter(!(substr(county_fips, 1, 2) %in% c('02', '15', '60', '66', '69', '72', '78'))) # no AK, HI, territory
+eaglei <- left_join(county_days, eaglei, by = c('county_fips', 'day')) %>%
+  complete(fill = list(outage = FALSE))
+write_parquet(eaglei, here('data/processed/eagle-i.parquet'))
