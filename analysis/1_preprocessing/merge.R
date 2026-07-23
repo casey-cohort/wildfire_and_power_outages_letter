@@ -33,12 +33,10 @@ ds <- list(
   `eagle-i` = read_parquet(here('data/processed/eagle-i.parquet')),
   `wfbz`    = read_parquet(here('data/processed/wfbz.parquet')),
   `wfs`     = read_parquet(here('data/processed/wfsmoke.parquet'))
-)
+) %>%
+  reduce(~full_join(.x, .y, by = c('county_fips', 'day')))
 
-if(!all(complete.cases(bind_rows(ds)))) stop('There are missing values in one or more of the data sets.')
-
-ds <- reduce(ds, full_join, by = c('county_fips', 'day'))
-
+if(!all(complete.cases(ds))) stop('There are unmatched counties/days in one or more of the data sets.')
 if(!is.logical(ds$outage)) stop('There are invalid values for `outage`.')
 if(!is.logical(ds$wfbz_occurrence)) stop('There are invalid values for `wfbz_occurrence`.')
 if(!is.logical(ds$wfs_smoke_day)) stop('There are invalid values for `wfs_smoke_day`.')
