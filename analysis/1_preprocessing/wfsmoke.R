@@ -8,7 +8,7 @@ options(scipen = 999)
 if (!require("pacman", quietly = TRUE)) {
   install.packages("pacman")
 }
-pacman::p_load(tidyverse, here, fs, arrow)
+pacman::p_load(tidyverse, here, fs, arrow, sf)
 
 dir_create(here('data/processed'))
 
@@ -41,7 +41,9 @@ wfs <- read_rds(here('data/raw/wfsmoke/wfsmoke.rds')) %>%
     county_fips = GEOID,
     day = date,
     wfs_pm = smokePM_pred,
-    wfs_smoke_day = TRUE
+    wfs_smoke_day_any = TRUE,
+    wfs_smoke_day_gt05 = wfs_pm > 5,
+    wfs_smoke_day_gt10 = wfs_pm > 10
   ) 
 # Account for county changes over time
 #  Commented out since we are only using 2018+, but left in case we want to do comparisons without eagle-i
@@ -60,9 +62,10 @@ wfs <- left_join(county_days, wfs, by = c('county_fips', 'day')) %>%
     day = seq.Date(min(day), max(day), by = 'days'),
     fill = list(
       wfs_pm = 0,
-      wfs_smoke_day = FALSE
+      wfs_smoke_day_any = FALSE,
+      wfs_smoke_day_gt05 = FALSE,
+      wfs_smoke_day_gt10 = FALSE
     )
   )
-
 
 write_parquet(wfs, here('data/processed/wfsmoke.parquet'))

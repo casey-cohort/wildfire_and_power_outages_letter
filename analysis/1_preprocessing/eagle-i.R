@@ -1,4 +1,4 @@
-# Identify whether counties experienced power outages in 2018 - 2025
+# Identify whether counties experienced power outages in 2018 - 2024
 # 
 # A county experiences a power outage when either 5000+ customers or 
 #  1% of the estimated total customers in a county report outage 
@@ -7,7 +7,7 @@
 # Only annual, statewide totals of customers were provided, and only
 #  through 2024. We therefore used the ACS to estimate the percentage
 #  of each state's households were in each county (annually), and assigned
-#  the statewide number of electric customers accordingly. When no 
+#  the statewide number of electric customers accordingly. FUTURE: When no 
 #  statewide total was reported (after 2024), we carried forward the 
 #  previous year's total. When no census estimates were available in 
 #  2025, we carried forward 2024's census data. 
@@ -17,7 +17,7 @@ options(scipen = 999)
 if (!require("pacman", quietly = TRUE)) {
   install.packages("pacman")
 }
-pacman::p_load(tidyverse, dbplyr, here, lubridate, slider, data.table, fs, arrow, tidycensus)
+pacman::p_load(tidyverse, dbplyr, here, lubridate, slider, data.table, fs, arrow, tidycensus, sf)
 
 if(Sys.getenv('CENSUS_API_KEY') == '') stop("Install a Census API Key with tidycensus (https://walker-data.com/tidycensus/reference/census_api_key.html).")
 
@@ -30,7 +30,7 @@ county_sf <- list(
   `2021` = read_sf(here('data/raw/county/county_2021.geojson')),
   `2022` = read_sf(here('data/raw/county/county_2021.geojson')),#using 2021 for subsequent years since other data sets don't use CT's new counties
   `2023` = read_sf(here('data/raw/county/county_2021.geojson')), 
-  `2024` = read_sf(here('data/raw/county/county_2021.geojson'))
+  `2024` = read_sf(here('data/raw/county/county_2021.geojson')),
 ) %>%
   map(~select(.x, county_fips = GEOID)) %>%
   map(~filter(.x, !(substr(county_fips, 1, 2) %in% c('02', '15', '72', '78')))) %>% # no AK, HI
@@ -40,6 +40,7 @@ county_days <- map2(
   county_sf, 
   c(2018:2024), 
   ~expand_grid(
+    threshold = c('1%', '5%', '10%'),
     county_fips = .x$county_fips, 
     day = seq.Date(ymd(paste(.y, '01', '01')), ymd(paste(.y, '12', '31')), by = 'days')
   )
@@ -115,11 +116,14 @@ eaglei <- map(
     eaglei <- eaglei %>%
       select(-matches('^total_customers$')) %>% # this only appears sometimes
       mutate(
-        outage_on = ifelse(customers_out > 5000 | ((customers_out / est_total_customers) > .01), 1, 0), # outages with 5k people or 25% of the county's customers
+        `1%` = (customers_out / est_total_customers) > .01 | customers_out >= 5000, # 1% of the county's customers
+        `5%` = (customers_out / est_total_customers) > .05 | customers_out >= 5000, # 5% of the county's customers
+        `10%` = (customers_out / est_total_customers) > .10 | customers_out >= 5000, # 10% of the county's customers
         hour = round_date(run_start_time, unit = 'hour'),
         fips_code = str_pad(fips_code, 5, pad = '0')
       ) %>%
-      group_by(fips_code, hour) %>%
+      pivot_longer(cols = matches('%'), names_to = 'threshold', values_to = 'outage_on') %>% 
+      group_by(threshold, fips_code, hour) %>%
       summarize(outage_on = max(outage_on), .groups = 'drop')
 
     # add day indicator
@@ -129,7 +133,7 @@ eaglei <- map(
 
     # group by day and find if there are 8 consecutive hrs in that day
     eaglei <- eaglei %>%
-      group_by(fips_code, day) %>%
+      group_by(threshold, fips_code, day) %>%
       mutate(
         outage_8hr = slide_lgl(outage_on, ~all(.x == 1), .before = 7, .complete = TRUE)
       )
@@ -138,7 +142,7 @@ eaglei <- map(
 
     eaglei_summary <- eaglei[, .(
       outage = ifelse(all(is.na(outage_8hr)), 0L, max(outage_8hr, na.rm = TRUE))
-    ), by = .(fips_code, day)]
+    ), by = .(threshold, fips_code, day)]
 
     setnames(eaglei_summary, 'fips_code', 'county_fips')
 
@@ -147,8 +151,7 @@ eaglei <- map(
 ) %>%
   bind_rows() %>%
   select(-c(state, county)) %>% 
-  mutate(outage = as.logical(outage)) %>% 
-  filter(!(substr(county_fips, 1, 2) %in% c('02', '15', '60', '66', '69', '72', '78'))) # no AK, HI, territory
-eaglei <- left_join(county_days, eaglei, by = c('county_fips', 'day')) %>%
+  mutate(outage = as.logical(outage))  
+eaglei <- left_join(county_days, eaglei, by = c('threshold', 'county_fips', 'day')) %>%
   complete(fill = list(outage = FALSE))
 write_parquet(eaglei, here('data/processed/eagle-i.parquet'))
