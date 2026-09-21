@@ -17,7 +17,7 @@ options(scipen = 999)
 if (!require("pacman", quietly = TRUE)) {
   install.packages("pacman")
 }
-pacman::p_load(tidyverse, dbplyr, here, lubridate, slider, data.table, fs, arrow, tidycensus, sf)
+pacman::p_load(tidyverse, dbplyr, here, lubridate, slider, data.table, fs, arrow, tidycensus, sf, dtplyr)
 
 if(Sys.getenv('CENSUS_API_KEY') == '') stop("Install a Census API Key with tidycensus (https://walker-data.com/tidycensus/reference/census_api_key.html).")
 
@@ -30,7 +30,7 @@ county_sf <- list(
   `2021` = read_sf(here('data/raw/county/county_2021.geojson')),
   `2022` = read_sf(here('data/raw/county/county_2021.geojson')),#using 2021 for subsequent years since other data sets don't use CT's new counties
   `2023` = read_sf(here('data/raw/county/county_2021.geojson')), 
-  `2024` = read_sf(here('data/raw/county/county_2021.geojson')),
+  `2024` = read_sf(here('data/raw/county/county_2021.geojson'))
 ) %>%
   map(~select(.x, county_fips = GEOID)) %>%
   map(~filter(.x, !(substr(county_fips, 1, 2) %in% c('02', '15', '72', '78')))) %>% # no AK, HI
@@ -82,7 +82,7 @@ eaglei_annual_files <- eaglei_annual_files[which(between(as.numeric(str_extract(
 eaglei <- map(
   eaglei_annual_files,
   function(eaglei_annual_file){
-
+    message(ealgei_annual_file)
     county_households <- suppressMessages(
       get_acs(
         geography = 'county', 
@@ -108,7 +108,7 @@ eaglei <- map(
 
     eaglei <- read_csv(eaglei_annual_file, show_col_types = FALSE) %>%
       mutate(fips_code = str_pad(fips_code, width = 5, pad = '0')) %>% 
-      left_join(county_households,  join_by(fips_code))
+      left_join(county_households,  join_by(fips_code)) 
 
     if('sum' %in% names(eaglei)) eaglei <- rename(eaglei, customers_out = sum) # fix inconsistent naming
     
@@ -124,34 +124,31 @@ eaglei <- map(
       ) %>%
       pivot_longer(cols = matches('%'), names_to = 'threshold', values_to = 'outage_on') %>% 
       group_by(threshold, fips_code, hour) %>%
-      summarize(outage_on = max(outage_on), .groups = 'drop')
-
-    # add day indicator
-    eaglei <- 
-      eaglei %>%
-      mutate(day = as.Date(hour))
-
-    # group by day and find if there are 8 consecutive hrs in that day
-    eaglei <- eaglei %>%
-      group_by(threshold, fips_code, day) %>%
-      mutate(
-        outage_8hr = slide_lgl(outage_on, ~all(.x == 1), .before = 7, .complete = TRUE)
-      )
-
-    eaglei <- setDT(eaglei)
-
-    eaglei_summary <- eaglei[, .(
-      outage = ifelse(all(is.na(outage_8hr)), 0L, max(outage_8hr, na.rm = TRUE))
-    ), by = .(threshold, fips_code, day)]
-
-    setnames(eaglei_summary, 'fips_code', 'county_fips')
-
-    left_join(eaglei_summary, fips_codes, by = 'county_fips')
+      summarize(outage_on = max(outage_on), .groups = 'drop') %>%
+      mutate(day = as.Date(hour)) %>%
+      group_by(fips_code, threshold) 
+    write_dataset(eaglei, here('data/eaglei-binned/'))
   }
-) %>%
-  bind_rows() %>%
+) 
+stop()
+# group by day and find if there are 8 consecutive hrs in that day
+eaglei <- open_dataset(here('data/eaglei-binned/')) %>%
+  distinct() %>%
+  collect() 
+
+eaglei <- setDT(eaglei)
+eaglei <- eaglei[, .(outage_8hr = slide_lgl(outage_on, ~all(.x == 1), .before = 7, .complete = TRUE)), by = .(fips_code, threshold, day)]
+eaglei_summary <- eaglei[, .(
+  outage = ifelse(all(is.na(outage_8hr)), 0L, max(outage_8hr, na.rm = TRUE))
+), by = .(fips_code, threshold, day)]
+
+setnames(eaglei_summary, 'fips_code', 'county_fips')
+eaglei_summary[, county_fips := str_pad(county_fips, 5, pad = '0')]
+
+eaglei <- left_join(eaglei_summary, fips_codes, by = 'county_fips') %>% 
   select(-c(state, county)) %>% 
   mutate(outage = as.logical(outage))  
+
 eaglei <- left_join(county_days, eaglei, by = c('threshold', 'county_fips', 'day')) %>%
   complete(fill = list(outage = FALSE))
 write_parquet(eaglei, here('data/processed/eagle-i.parquet'))

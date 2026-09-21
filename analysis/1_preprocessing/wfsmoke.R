@@ -57,6 +57,7 @@ wfs <- read_rds(here('data/raw/wfsmoke/wfsmoke.rds')) %>%
 #)
   
 wfs <- left_join(county_days, wfs, by = c('county_fips', 'day')) %>%
+  distinct() %>%
   group_by(county_fips) %>% 
   complete(
     day = seq.Date(min(day), max(day), by = 'days'),

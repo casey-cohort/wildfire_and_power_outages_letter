@@ -4,14 +4,18 @@
 #  we conservatively consider fires to last 4 days if not
 #  otherwise known, which is the 25th percentile length 
 #  of fires that _did_ have an end date. 
-
 options(scipen = 999)
+
 if (!require("pacman", quietly = TRUE)) {
   install.packages("pacman")
 }
-pacman::p_load(tidyverse, here, fs, sf, arrow, tigris, terra, exactextractr)
+pacman::p_load(tidyverse, here, fs, sf, arrow, tigris, terra, exactextractr, geoarrow)
+
+lambert_crs <- 'PROJCS["USA_Contiguous_Albers_Equal_Area_Conic",GEOGCS["NAD83",DATUM["North_American_Datum_1983",SPHEROID["GRS 1980",6378137,298.257222101,AUTHORITY["EPSG","7019"]],AUTHORITY["EPSG","6269"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4269"]],PROJECTION["Albers_Conic_Equal_Area"],PARAMETER["latitude_of_center",37.5],PARAMETER["longitude_of_center",-96],PARAMETER["standard_parallel_1",29.5],PARAMETER["standard_parallel_2",45.5],PARAMETER["false_easting",0],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH]]'
 
 dir_create(here('data/processed'))
+
+pop20 <- rast('data/raw/GHS_POP_E2020_GLOBE_R2023A_54009_100_V1_0.tif')
 
 wfbz <- read_sf(here('data/raw/wfbz/wfbz.geojson')) %>% 
   filter(between(wildfire_year, 2018, 2024)) %>% 
@@ -26,18 +30,24 @@ wfbz <- read_sf(here('data/raw/wfbz/wfbz.geojson')) %>%
   #sample_n(2) %>% #DEBUG
   split(.$wildfire_year) 
 
-county_sf <- list(
-  `2018` = read_sf(here('data/raw/county/county_2018.geojson')),
-  `2019` = read_sf(here('data/raw/county/county_2019.geojson')),
-  `2020` = read_sf(here('data/raw/county/county_2020.geojson')),
-  `2021` = read_sf(here('data/raw/county/county_2021.geojson')),
-  `2022` = read_sf(here('data/raw/county/county_2021.geojson')),#using 2021 for subsequent years since other data sets don't use CT's new counties
-  `2023` = read_sf(here('data/raw/county/county_2021.geojson')), 
-  `2024` = read_sf(here('data/raw/county/county_2021.geojson'))
-) %>%
-  map(~select(.x, county_fips = GEOID)) %>%
-  map(~filter(.x, !(substr(county_fips, 1, 2) %in% c('02', '15', '60', '66', '69', '72', '78')))) %>% # no AK, HI, territory
-  map(~mutate(.x, pop20 = exactextractr::exact_extract(pop20, st_transform(geometry, crs = crs(pop20)), fun = 'sum')))
+if(!file.exists(here('data/processed/county_pop.geojson'))){
+  county_sf <- list(
+    `2018` = read_sf(here('data/raw/county/county_2018.geojson')),
+    `2019` = read_sf(here('data/raw/county/county_2019.geojson')),
+    `2020` = read_sf(here('data/raw/county/county_2020.geojson')),
+    `2021` = read_sf(here('data/raw/county/county_2021.geojson')),
+    `2022` = read_sf(here('data/raw/county/county_2021.geojson')),#using 2021 for subsequent years since other data sets don't use CT's new counties
+    `2023` = read_sf(here('data/raw/county/county_2021.geojson')), 
+    `2024` = read_sf(here('data/raw/county/county_2021.geojson'))
+  ) %>%
+    map(~select(.x, county_fips = GEOID)) %>%
+    map(~filter(.x, !(substr(county_fips, 1, 2) %in% c('02', '15', '60', '66', '69', '72', '78')))) %>% # no AK, HI, territory
+    map(~mutate(.x, pop20 = exactextractr::exact_extract(pop20, st_transform(geometry, crs = crs(pop20)), fun = 'sum'))) 
+  write_sf(bind_rows(county_sf, .id = 'year'), here('data/processed/county_pop.geojson'))
+}else{
+  county_sf <- read_sf(here('data/processed/county_pop.geojson')) %>% 
+    split(.$year) 
+}
 
 county_days <- map2(
   county_sf, 
@@ -49,15 +59,14 @@ county_days <- map2(
 ) %>%
   bind_rows() 
 
-pop20 <- rast('data/raw/GHS_POP_E2020_GLOBE_R2023A_54009_100_V1_0.tif')
-
 wfbz_occurrence <- map2(
   # find the union of the fire buffers in each county on each day, then find pop
   county_sf,
   wfbz,
   function(county_sf, wfbz){
-    wfbz_buffered <- st_transform(wfbz, st_crs(county_sf)) %>%
+    wfbz_buffered <- st_transform(wfbz, lambert_crs) %>%
       mutate(geometry = st_buffer(geometry, 10000))
+    county_sf <- st_transform(county_sf, lambert_crs)
     county_fire_encounters <- st_intersection(county_sf, wfbz_buffered) %>%
       inner_join(county_days, by = join_by(county_fips, y$day <= x$end, y$day >= x$start)) %>%
       group_by(county_fips, day) %>%
@@ -72,7 +81,9 @@ wfbz_occurrence <- map2(
     )
     
     county_fire_encounters <- county_fire_encounters %>%
-      left_join(st_drop_geometry(unique_geoms) %>% select(geom_hash, pop20_affected), by = 'geom_hash')
+      left_join(st_drop_geometry(unique_geoms) %>% select(geom_hash, pop20_affected), by = 'geom_hash') %>%
+      group_by(county_fips, day) %>%
+      summarize(pop20_affected = sum(pop20_affected, na.rm = TRUE), .groups = "drop")
     
     st_drop_geometry(county_fire_encounters) %>% 
       left_join(st_drop_geometry(county_sf), by = 'county_fips') %>%
@@ -86,6 +97,10 @@ wfbz_occurrence <- map2(
   }
 ) %>%
   bind_rows() %>%
-  pivot_longer(cols = matches('%'), names_to = 'threshold', values_to = 'wfbz_affected') 
+  pivot_longer(cols = matches('%'), names_to = 'threshold', values_to = 'wfbz_affected') %>%
+  full_join(cross_join(county_days, tibble(threshold = c('1%', '5%', '10%')))) %>%
+  complete(fill = list(wfbz_affected = FALSE)) %>%
+  group_by(county_fips, day, threshold) %>%
+  summarize(wfbz_affected = any(wfbz_affected)) # dupe only happens for a fire in yolo county in 2020
 
 write_parquet(wfbz_occurrence, here('data/processed/wfbz.parquet'))

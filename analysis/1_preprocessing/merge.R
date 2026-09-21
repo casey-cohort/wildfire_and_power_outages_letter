@@ -2,43 +2,26 @@ options(scipen = 999)
 if (!require("pacman", quietly = TRUE)) {
   install.packages("pacman")
 }
-pacman::p_load(tidyverse, here, fs, arrow)
+pacman::p_load(tidyverse, here, fs, arrow, sf)
 
-
-county_sf <- list(
-  `2018` = read_sf(here('data/raw/county/county_2018.geojson')),
-  `2019` = read_sf(here('data/raw/county/county_2019.geojson')),
-  `2020` = read_sf(here('data/raw/county/county_2020.geojson')),
-  `2021` = read_sf(here('data/raw/county/county_2021.geojson')),
-  `2022` = read_sf(here('data/raw/county/county_2021.geojson')),#using 2021 for subsequent years since other data sets don't use CT's new counties
-  `2023` = read_sf(here('data/raw/county/county_2021.geojson')), 
-  `2024` = read_sf(here('data/raw/county/county_2021.geojson'))
+ds <- full_join(
+  read_parquet(here('data/processed/eagle-i.parquet')),
+  read_parquet(here('data/processed/wfbz.parquet')),
+  by = c('county_fips', 'day', 'threshold'),
+  relationship = 'one-to-one'
 ) %>%
-  map(~select(.x, county_fips = GEOID)) %>%
-  map(~filter(.x, !(substr(county_fips, 1, 2) %in% c('02', '15', '72', '78')))) %>% # no AK, HI
-  st_drop_geometry() 
-
-county_days <- map2(
-  county_sf, 
-  c(2018:2024), 
-  ~expand_grid(
-    county_fips = .x$county_fips, 
-    day = seq.Date(ymd(paste(.y, '01', '01')), ymd(paste(.y, '12', '31')), by = 'days')
-  )
-) %>%
-  bind_rows() 
-
-
-ds <- list(
-  `eagle-i` = read_parquet(here('data/processed/eagle-i.parquet')),
-  `wfbz`    = read_parquet(here('data/processed/wfbz.parquet')),
-  `wfs`     = read_parquet(here('data/processed/wfsmoke.parquet'))
-) %>%
-  reduce(~full_join(.x, .y, by = c('county_fips', 'day')))
+  full_join(
+    read_parquet(here('data/processed/wfsmoke.parquet')),
+    by = c('county_fips', 'day'),
+    relationship = 'many-to-one'
+  ) %>%
+  filter(as.numeric(county_fips) < 60000) %>% # no territories
+  filter(!(substr(county_fips, 1, 2) %in% c('02', '15'))) # conus only
 
 if(!all(complete.cases(ds))) stop('There are unmatched counties/days in one or more of the data sets.')
 if(!is.logical(ds$outage)) stop('There are invalid values for `outage`.')
-if(!is.logical(ds$wfbz_occurrence)) stop('There are invalid values for `wfbz_occurrence`.')
-if(!is.logical(ds$wfs_smoke_day)) stop('There are invalid values for `wfs_smoke_day`.')
+if(!is.logical(ds$wfbz_affected)) stop('There are invalid values for `wfbz_occurrence`.')
+if(!is.logical(ds$wfs_smoke_day_any)) stop('There are invalid values for `wfs_smoke_day`.')
+if(!is.numeric(ds$wfs_pm)) stop('There are invalid values for `wfs_smoke_day`.')
 
 write_parquet(ds, here('data/processed/merged.parquet'))

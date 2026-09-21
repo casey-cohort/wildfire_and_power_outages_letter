@@ -4,8 +4,9 @@ if (!require("pacman", quietly = TRUE)) {
 }
 pacman::p_load(tidyverse, here, fs, sf, tigris)
 
+dir_delete(here('data/raw/county'))
 dir_create(here('data/raw/county'))
 
 county_sf <- map(2018:2025, ~counties(year = .x, progress_bar = FALSE,  refresh = TRUE))
 names(county_sf) <- 2018:2025
-map(names(county_sf), ~write_sf(county_sf[[.x]], here(paste0('data/raw/county/county_', .x, '.geojson'))))
+walk(names(county_sf), ~write_sf(county_sf[[.x]], here(paste0('data/raw/county/county_', .x, '.geojson'))))
