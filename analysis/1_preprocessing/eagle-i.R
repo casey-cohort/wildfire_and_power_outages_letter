@@ -82,7 +82,7 @@ eaglei_annual_files <- eaglei_annual_files[which(between(as.numeric(str_extract(
 eaglei <- map(
   eaglei_annual_files,
   function(eaglei_annual_file){
-    message(ealgei_annual_file)
+    message(eaglei_annual_file)
     county_households <- suppressMessages(
       get_acs(
         geography = 'county', 
@@ -126,13 +126,13 @@ eaglei <- map(
       group_by(threshold, fips_code, hour) %>%
       summarize(outage_on = max(outage_on), .groups = 'drop') %>%
       mutate(day = as.Date(hour)) %>%
-      group_by(fips_code, threshold) 
-    write_dataset(eaglei, here('data/eaglei-binned/'))
+      group_by(fips_code, threshold, year = year(day)) 
+    write_dataset(eaglei, here('data/processed/eaglei-binned/'), existing_data_behavior = 'delete_matching')
   }
 ) 
-stop()
+
 # group by day and find if there are 8 consecutive hrs in that day
-eaglei <- open_dataset(here('data/eaglei-binned/')) %>%
+eaglei <- open_dataset(here('data/processed/eaglei-binned/')) %>%
   distinct() %>%
   collect() 
 
