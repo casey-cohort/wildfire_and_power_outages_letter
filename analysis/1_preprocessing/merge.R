@@ -24,4 +24,4 @@ if(!is.logical(ds$wfbz_affected)) stop('There are invalid values for `wfbz_occur
 if(!is.logical(ds$wfs_smoke_day_any)) stop('There are invalid values for `wfs_smoke_day`.')
 if(!is.numeric(ds$wfs_pm)) stop('There are invalid values for `wfs_smoke_day`.')
 
-write_parquet(ds, here('data/processed/merged.parquet'))
+write_parquet(ds, here('merged.parquet'))

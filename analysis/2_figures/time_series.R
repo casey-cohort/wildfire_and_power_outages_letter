@@ -5,7 +5,7 @@ if (!require("pacman", quietly = TRUE)) {
 pacman::p_load(tidyverse, here, fs, arrow, PNWColors)
 pacman::p_load_gh('lpiep/gguw')
 
-ds <- read_parquet(here('data/processed/merged.parquet')) %>%
+ds <- read_parquet(here('merged.parquet')) %>%
   select(-wfs_pm, -wfs_smoke_day_gt05, -wfs_smoke_day_any) %>%
   pivot_longer(-c(day, county_fips, threshold), names_to = 'event') %>%
   mutate(
@@ -39,10 +39,11 @@ ggsave(filename = here('figures/time_series.png'), dpi = 300, width = 12, height
 
 
 
-ds_combos <- read_parquet(here('data/processed/merged.parquet')) %>%
+ds_combos <- read_parquet(here('merged.parquet')) %>%
   transmute(
     county_fips,
     day,
+    threshold,
     event = case_when(
       outage & wfs_smoke_day_gt10 ~ 'Smoke and Outage',
       outage & wfbz_affected ~ 'Wildfire and Outage',
@@ -58,7 +59,7 @@ ds_combos <- read_parquet(here('data/processed/merged.parquet')) %>%
   ) 
 
 p <- ggplot(ds_combos) + 
-  geom_area(aes(x = day, y = `Counties experiencing event`, fill = event)) + 
+  geom_col(aes(x = day, y = `Counties experiencing event`, fill = event)) + 
   scale_fill_manual(values = PNWColors::pnw_palette('Sunset2', 2), name = '') +
   scale_x_date(breaks = seq.Date(min(ds$day), max(ds$day)+1, by = '4 months'), date_labels = '%b \'%y', name = '') + 
   scale_y_continuous(expand = expansion(add = 0)) + 
@@ -68,7 +69,7 @@ p <- ggplot(ds_combos) +
     axis.text.x = element_text(angle = 3*90),
     axis.ticks.x = element_line(linewidth = .1, color = 'grey50')
   ) +
-  facet_wrap(~threshold, ncol = 1)
+  facet_wrap(~threshold, ncol = 3)
 
 p
-ggsave(plot = p, filename = here('figures/time_series_combos.png'), width = 6, height = 9, scale = .6)
+ggsave(plot = p, filename = here('figures/time_series_combos.png'), width = 18, height = 3, scale = .6)
