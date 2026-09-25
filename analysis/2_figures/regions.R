@@ -99,5 +99,5 @@ ggsave(plot = p_all, here('figures/by_state/all.png'), height = 4, width = 2)
 ggsave(plot = p_two, here('figures/by_state/outage_any_wf.png'), height = 4, width = 2)
 ggsave(plot = p_outage_wfbz, here('figures/by_state/outage_wfbz.png'), height = 4, width = 2)
 ggsave(plot = p_outage_wfs, here('figures/by_state/outage_wfs.png'), height = 4, width = 2)
-ggsave(plot = p_wfbz_wfs, here('figures/by_state/outage_wfs.png'), height = 4, width = 2)
+ggsave(plot = p_wfbz_wfs, here('figures/by_state/wfbz_wfs.png'), height = 4, width = 2)
 

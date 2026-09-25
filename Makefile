@@ -3,6 +3,7 @@
 # Pipeline:
 #   analysis/0_data/<name>.sh          -> download raw data into data/raw/<name>/
 #   analysis/1_preprocessing/<name>.R  -> read raw data, write data/processed/<name>.parquet
+#   analysis/2_figures/<name>.R        -> read merged.parquet, write figures/<name>/*.png
 #
 # All scripts use paths relative to the project root, so always run make from
 # the project root (that is where this file lives).
@@ -10,6 +11,7 @@
 R           := Rscript
 DATA        := analysis/0_data
 PREP        := analysis/1_preprocessing
+FIG         := analysis/2_figures
 
 # Set NO_DOWNLOAD=1 to reuse whatever raw data is already on disk instead of
 # (re)downloading it. Handy after editing a download script or when you only
@@ -30,17 +32,26 @@ PROCESSED := \
 
 # merge.R joins the individual processed datasets into one merged table, so its
 # output depends on all of the above.
-MERGED := data/processed/merged.parquet
+MERGED := merged.parquet
 
-.PHONY: all data clean clean-processed clean-raw help
+# Each figures/*.R script writes several PNGs at once into its own
+# figures/<name>/ directory, so — like eagle-i's and county's downloads — we
+# track a .stamp file rather than the individual PNGs.
+FIGURES := \
+	figures/by_state/.stamp \
+	figures/time_series/.stamp
+
+.PHONY: all data figures clean clean-processed clean-raw clean-figures help
 .DELETE_ON_ERROR:
 
-all: $(MERGED)                           ## Build every processed dataset, including the merge (default)
+all: $(MERGED) $(FIGURES)                ## Build every processed dataset and figure (default)
 
 data: data/raw/eagle-i/.stamp \
       data/raw/wfbz/wfbz.geojson \
       data/raw/wfsmoke/wfsmoke.rds \
       data/raw/county/.stamp             ## Download all raw data
+
+figures: $(FIGURES)                      ## Generate all figures
 
 # ---------------------------------------------------------------------------
 # 0. Download raw data
@@ -83,6 +94,26 @@ $(MERGED): $(PREP)/merge.R $(PROCESSED)
 	$(R) $<
 
 # ---------------------------------------------------------------------------
+# 2. Generate figures
+# ---------------------------------------------------------------------------
+
+# A directory can't be the target itself: its mtime only changes when a file
+# is added or removed inside it, not when an existing PNG is rewritten, so
+# make would fail to notice regions.R had changed and needed to re-run. A
+# .stamp file, touched after the script succeeds, gives make something with a
+# real mtime to key off instead.
+
+figures/by_state/.stamp: $(FIG)/regions.R $(MERGED)
+	@mkdir -p $(@D)
+	$(R) $<
+	@touch $@
+
+figures/time_series/.stamp: $(FIG)/time_series.R $(MERGED)
+	@mkdir -p $(@D)
+	$(R) $<
+	@touch $@
+
+# ---------------------------------------------------------------------------
 # Housekeeping
 # ---------------------------------------------------------------------------
 
@@ -92,7 +123,10 @@ clean-processed:                         ## Remove processed parquet files
 clean-raw:                               ## Remove downloaded raw data
 	rm -rf data/raw/eagle-i data/raw/wfbz data/raw/wfsmoke data/raw/county
 
-clean: clean-processed clean-raw         ## Remove all generated data
+clean-figures:                           ## Remove generated figures
+	rm -rf figures/by_state figures/time_series
+
+clean: clean-processed clean-raw clean-figures  ## Remove all generated data
 
 help:                                    ## List available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \

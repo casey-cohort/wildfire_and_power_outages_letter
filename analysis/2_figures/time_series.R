@@ -35,7 +35,7 @@ ggplot(ds) +
     axis.ticks.length.x = unit(1, 'pt')
   )
 
-ggsave(filename = here('figures/time_series.png'), dpi = 300, width = 12, height = 3)
+ggsave(filename = here('figures/time_series/time_series.png'), dpi = 300, width = 12, height = 3)
 
 
 
@@ -72,4 +72,4 @@ p <- ggplot(ds_combos) +
   facet_wrap(~threshold, ncol = 3)
 
 p
-ggsave(plot = p, filename = here('figures/time_series_combos.png'), width = 18, height = 3, scale = .6)
+ggsave(plot = p, filename = here('figures/time_series/time_series_combos.png'), width = 18, height = 3, scale = .6)
