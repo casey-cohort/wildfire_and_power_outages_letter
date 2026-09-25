@@ -1,0 +1,345 @@
+% Options for packages loaded elsewhere
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+  letterpaper,
+  DIV=11,
+  numbers=noendperiod]{scrartcl}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+% Make \paragraph and \subparagraph free-standing
+\makeatletter
+\ifx\paragraph\undefined\else
+  \let\oldparagraph\paragraph
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+  \let\oldsubparagraph\subparagraph
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+\makeatother
+
+
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+
+
+% definitions for citeproc citations
+\NewDocumentCommand\citeproctext{}{}
+\NewDocumentCommand\citeproc{mm}{%
+  \begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
+\makeatletter
+ % allow citations to break across lines
+ \let\@cite@ofmt\@firstofone
+ % avoid brackets around text for \cite:
+ \def\@biblabel#1{}
+ \def\@cite#1#2{{#1\if@tempswa , #2\fi}}
+\makeatother
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newenvironment{CSLReferences}[2] % #1 hanging-indent, #2 entry-spacing
+ {\begin{list}{}{%
+  \setlength{\itemindent}{0pt}
+  \setlength{\leftmargin}{0pt}
+  \setlength{\parsep}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+   \setlength{\leftmargin}{\cslhangindent}
+   \setlength{\itemindent}{-1\cslhangindent}
+  \fi
+  % set entry spacing
+  \setlength{\itemsep}{#2\baselineskip}}}
+ {\end{list}}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+
+
+
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+
+
+ 
+
+
+\KOMAoption{captions}{tableheading}
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\AtBeginDocument{%
+\ifdefined\contentsname
+  \renewcommand*\contentsname{Table of contents}
+\else
+  \newcommand\contentsname{Table of contents}
+\fi
+\ifdefined\listfigurename
+  \renewcommand*\listfigurename{List of Figures}
+\else
+  \newcommand\listfigurename{List of Figures}
+\fi
+\ifdefined\listtablename
+  \renewcommand*\listtablename{List of Tables}
+\else
+  \newcommand\listtablename{List of Tables}
+\fi
+\ifdefined\figurename
+  \renewcommand*\figurename{Figure}
+\else
+  \newcommand\figurename{Figure}
+\fi
+\ifdefined\tablename
+  \renewcommand*\tablename{Table}
+\else
+  \newcommand\tablename{Table}
+\fi
+}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listing}
+\newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Wildfires and Power Outages? How do they interact? Do they interact? Let's find out! (Replace me)},
+  colorlinks=true,
+  linkcolor={blue},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={Blue},
+  pdfcreator={LaTeX via pandoc}}
+
+
+\title{Wildfires and Power Outages? How do they interact? Do they
+interact? Let's find out! (Replace me)}
+\author{Heather McBrien \and Logan Piepmeier \and Joan Casey}
+\date{}
+\begin{document}
+\maketitle
+
+
+\subsection{Abstract}\label{abstract}
+
+\emph{Write me.}
+
+\subsection{Introduction}\label{introduction}
+
+\emph{Write me.}
+
+\subsection{Methods}\label{methods}
+
+\subsubsection{Data}\label{data}
+
+\paragraph{Power Outages}\label{power-outages}
+
+We determined when a county experienced power outage using the
+Environment for the Analysis of Geo-Located Energy Information (EAGLE-I)
+data set(Brelsford et al. 2023), which records the number of customers
+per US county experiencing power outages in 15 minute intervals. We
+aggregated that data to daily intervals, defining a county to be
+affected by power outage on a particular day when at least \textbf{XXX\%
+FIX ME ONCE WE DECIDE} or 5000 customers had been without power for at
+least eight hours. I.e. for a power outage from 10:00 PM on day one to
+6:00 AM on day two, we considered the county to have experienced an
+outage on day two, when the length of the outage first reached eight
+hours. For a longer outage from 8:00 AM on day 1 to 9:00 PM on day two,
+we considered both days to be affected by outage since day one had
+accumulated eight consecutive hours of outage by 4:00 PM, and day two
+had experienced eight consecutive hours as soon as it began on midnight.
+
+The total number of customers per county was not available for all
+years. When it was missing, we estimated it by using the number of
+households in the American Community Survey (ACS) for that year and
+county. ACS data for 2025 was not yet available, so we used the 2024
+household count for that year. ACS estimates were obtained with the
+Tidycensus R Package(Walker and Herman 2026).
+
+Although the EAGLE-I data set covers the United States and was available
+for 2014 through 2025, its geographic coverage improved considerably in
+2018. We therefore restricted our analysis to 2018 and later.
+
+\paragraph{Wildfire Smoke}\label{wildfire-smoke}
+
+We determined when a county was affected by wilfire smoke using a model
+of daily ambient PM\textsubscript{2.5} attributable to wildfire smoke
+(WFS)(Childs et al. 2025). These WFS predictions were available
+aggregated to county level. The model identifies a day as a smoke day if
+a if the NOAA Hazard Mapping System satellite data indicated smoke plume
+overhead, regardless of the modeled concentration of
+PM\textsubscript{2.5}. We used a modfied definition for a smoke day,
+considering a day to be exposed to WFS only if on smoke days with WFS
+PM\textsubscript{2.5} concentrations of \textbf{XXX FIX ME} µg/m³ or
+above.
+
+This model covered the continental United States for 2008 through 2024.
+
+\paragraph{Wildfire Burn Zones}\label{wildfire-burn-zones}
+
+We determined whether a county was affected by a wildfire disaster using
+a data set of wildfire burn zones (WFBZ) for fires resulting in at least
+one death, one destroyed building, or a FEMA major disaster declaration
+(Wilner et al. 2025). The data set includes the largest extent of these
+fires' perimeters, the estimated ignition date, and, when available, the
+containment date. For fires without a containment date, we estimated it
+to be four days after ignition. Four days was the 25th percentile of all
+known fire durations in the data set.
+
+We obtained 100 meter gridded population estimates from the Global Human
+Settlement Layer(Pesaresi et al. 2024), and used these to calculate the
+number of people living within 10 km of each fire and living in each
+county. We considered a county to be affected when at least
+\textbf{XXX\% FIX ME ONCE WE DECIDE} of the county population or 5000
+people lived within 10 km of any active disaster fire on that day. This
+data set covered the United States from 2000 through 2025.
+
+\paragraph{Combining Data Sets}\label{combining-data-sets}
+
+We then merged the three data sets on county and day, restricting to
+days covered by all three input data sets: January 1, 2018 through
+December 31, 2024. Each county and day thus had a binary value for:
+
+\begin{itemize}
+\tightlist
+\item
+  power outage
+\item
+  exposure to wildfire smoke
+\item
+  proximity to wildfire disaster
+\end{itemize}
+
+\subsubsection{Visualization}\label{visualization}
+
+\emph{We made a pretty map!}
+
+\subsection{Results}\label{results}
+
+\emph{Here is our pretty map!}
+
+\subsection{Discussion}\label{discussion}
+
+\emph{Our map is great!}
+
+\phantomsection\label{refs}
+\begin{CSLReferences}{1}{0}
+\bibitem[\citeproctext]{ref-Brelsford2023}
+Brelsford, Christa, Sarah Tennille, Aaron Myers, Supriya Chinthavali,
+Varisara Tansakul, Matthew Denman, Mark Coletti, et al. 2023. {``{The
+Environment for Analysis of Geo-Located Energy Information's Recorded
+Electricity Outages 2014-2025},''} November.
+\url{https://doi.org/10.6084/m9.figshare.24237376.v4}.
+
+\bibitem[\citeproctext]{ref-Childs2025-hu}
+Childs, Marissa, Mariana Martins, Andrew Wilson, Minghao Qiu, Sam
+Heft-Neal, and Marshall Burke. 2025. {``Growing Wildfire-Derived {PM2.5}
+Across the Contiguous {U.S}. And Implications for Air Quality
+Regulation.''} \emph{EarthArXiv}.
+
+\bibitem[\citeproctext]{ref-Pesaresi2024-aq}
+Pesaresi, Martino, Marcello Schiavina, Panagiotis Politis, Sergio
+Freire, Katarzyna Krasnodębska, Johannes H Uhl, Alessandra Carioli, et
+al. 2024. {``Advances on the Global Human Settlement Layer by Joint
+Assessment of Earth Observation and Population Survey Data.''}
+\emph{Int. J. Digit. Earth} 17 (1).
+
+\bibitem[\citeproctext]{ref-Walker2026}
+Walker, Kyle, and Matt Herman. 2026. \emph{Tidycensus: Load US Census
+Boundary and Attribute Data as 'Tidyverse' and 'Sf'-Ready Data Frames}.
+\url{https://walker-data.com/tidycensus/}.
+
+\bibitem[\citeproctext]{ref-Wilner2025-kr}
+Wilner, Lauren B, Logan Piepmeier, Milo Gordon, Benjamin B Steiger,
+Alexander J Northrop, Heather McBrien, Brittany Shea, et al. 2025.
+{``Two and a Half Decades of United States Wildfire Burn Zone Disaster
+Data, 2000-2025.''} \emph{Sci. Data} 12 (1): 1948.
+
+\end{CSLReferences}
+
+
+
+
+\end{document}

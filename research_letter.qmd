@@ -1,0 +1,69 @@
+---
+title: Wildfires and Power Outages? How do they interact? Do they interact? Let's find out! (Replace me)
+authors:
+  - name: Heather McBrien
+    affiliation: Columbia University
+    corresponding: true
+  - name: Logan Piepmeier
+    affiliation: University of Washington
+    corresponding: false
+  - name: Joan Casey
+    affiliation: University of Washington
+    corresponding: false
+bibliography: references.bib
+---
+## Abstract
+
+_Write me._
+
+## Introduction
+
+_Write me._
+
+## Methods
+
+### Data
+
+#### Power Outages
+
+We determined when a county experienced power outage using the Environment for the Analysis of Geo-Located Energy Information (EAGLE-I) data set[@Brelsford2023], which records the number of customers per US county experiencing power outages in 15 minute intervals. We aggregated that data to daily intervals, defining a county to be affected by power outage on a particular day when at least **XXX% FIX ME ONCE WE DECIDE** or 5,000 customers had been without power for at least eight hours. I.e. for a power outage from 10:00 PM on day one to 6:00 AM on day two, we considered the county to have experienced an outage on day two, when the length of the outage first reached eight hours. For a longer outage from 8:00 AM on day 1 to 9:00 PM on day two, we considered both days to be affected by outage since day one had accumulated eight consecutive hours of outage by 4:00 PM, and day two had experienced eight consecutive hours as soon as it began on midnight.
+
+The total number of customers per county was not available for all years. When it was missing, we estimated it by using the number of households in the American Community Survey (ACS) for that year and county. ACS data for 2025 was not yet available, so we used the 2024 household count for that year. ACS estimates were obtained with the Tidycensus R Package[@Walker2026].
+
+Although the EAGLE-I data set covers the United States and was available for 2014 through 2025, its geographic coverage improved considerably in 2018. We therefore restricted our analysis to 2018 and later.
+
+#### Wildfire Smoke
+
+We determined when a county was affected by wilfire smoke using a model of daily ambient PM~2.5~ attributable to wildfire smoke (WFS)[@Childs2025-hu]. These WFS predictions were available aggregated to county level. The model identifies a day as a smoke day if a if the NOAA Hazard Mapping System satellite data indicated smoke plume overhead, regardless of the modeled concentration of PM~2.5~. We used a modfied definition for a smoke day, considering a day to be exposed to WFS only if on smoke days with WFS PM~2.5~ concentrations of **XXX FIX ME** µg/m³ or above.
+
+This model covered the continental United States for 2008 through 2024. 
+
+#### Wildfire Burn Zones
+
+We determined whether a county was affected by a wildfire disaster using a data set of wildfire burn zones (WFBZ) for fires resulting in at least one death, one destroyed building, or a FEMA major disaster declaration [@Wilner2025-kr]. The data set includes the largest extent of these fires' perimeters, the estimated ignition date, and, when available, the containment date. For fires without a containment date, we estimated it to be four days after ignition. Four days was the 25th percentile of all known fire durations in the data set.
+
+We obtained 100 meter gridded population estimates from the Global Human Settlement Layer[@Pesaresi2024-aq], and used these to calculate the number of people living within 10 km of each fire and living in each county. We considered a county to be affected when at least **XXX% FIX ME ONCE WE DECIDE** of the county population or 5,000 people lived within 10 km of any active disaster fire on that day. This data set covered the United States from 2000 through 2025.
+
+#### Combining Data Sets
+
+We then merged the three data sets on county and day, restricting to days covered by all three input data sets: January 1, 2018 through December 31, 2024. Each county and day thus had a binary value for:
+
+- power outage
+- exposure to wildfire smoke
+- proximity to wildfire disaster
+
+### Visualization
+
+_We made a pretty map!_
+
+## Results
+
+_Here is our pretty map!_ 
+
+## Discussion
+
+_Our map is great!_
+
+## References
+
+<!-- there will be references put here by quarto --> 
