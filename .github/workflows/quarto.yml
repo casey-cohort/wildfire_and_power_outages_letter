@@ -1,0 +1,32 @@
+name: Quarto Render
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          # Optional: Install tinytex if your project renders to PDF
+          tinytex: true 
+
+      - name: Render Quarto Project
+        uses: quarto-dev/quarto-actions/render@v2
+
+      - name: Commit and Push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user-email "41898282+github-actions[bot]@://github.com"
+          git add .
+          git diff-index --quiet HEAD || git commit -m "Automated Quarto Render"
+          git push

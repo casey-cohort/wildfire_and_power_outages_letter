@@ -9,6 +9,30 @@ Cloning this repo and running `make` should rebuild all the data sets and figure
 
 `quarto render` should rebuild the letter itself to `_manuscript`. 
 
+## What's what? 
+
+### Manuscript
+
+- `research_letter.qmd` markdown/quarto document containing raw manuscript text
+- `references.bib` bibtex bibliography
+- `_manuscript` rendered manuscript files
+
+### Analysis code
+
+- `analysis/0_data` scripts to download each source data set
+- `analysis/1_preprocessing` scripts to turn each data set into a binary daily exposure, then merge
+- `analysis/2_figures` scripts to produce figures (not just the main figure for the paper)
+
+### Data
+
+Not on Github. Will be populated when you run `make`. Gets to about 24 GB. 
+
+- `data/raw` produced by `analysis/0_data`
+- `data/processed` produced by `analysis/1_preprocessing`
+
+On Github:
+
+- `merged.parquet` the analytic data set produced by the pipeline. 
 
 ## Note on geography changes
 
