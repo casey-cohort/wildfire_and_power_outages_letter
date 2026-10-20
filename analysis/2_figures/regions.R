@@ -8,7 +8,7 @@ pacman::p_load_gh('lpiep/gguw')
 ds <- read_parquet(here('merged.parquet')) %>%
   mutate(threshold = factor(threshold, levels = c('1%', '5%', '10%')))
 
-conus_sf <- tigris::states(cb = TRUE) %>% 
+states_sf <- tigris::states(cb = TRUE) %>% 
   filter(STUSPS %in% c(state.abb, 'DC'), !(STUSPS %in% c('AK', 'HI'))) %>%
   transmute(
     state_fips = STATEFP,
@@ -20,7 +20,7 @@ summary_spatial <- ds %>%
   mutate(state_fips = substr(county_fips, 1, 2)) %>%
   group_by(state_fips, threshold) %>%
   summarize(
-    apocalypse = mean(all(outage, wfbz_affected, wfs_smoke_day_gt10)),
+    apocalypse = mean(outage & wfbz_affected & wfs_smoke_day_gt10),
     outage_and_wf = mean(outage & (wfbz_affected | wfs_smoke_day_gt10)),
     outage_and_wfbz = mean(outage & wfbz_affected),
     outage_and_wfs = mean(outage & wfs_smoke_day_gt10),
@@ -30,7 +30,7 @@ summary_spatial <- ds %>%
     wfs_smoke_day_gt10 = mean(wfs_smoke_day_gt10),
     .groups = "drop_last"
   ) %>%
-  left_join(conus_sf, by = join_by(state_fips)) %>%
+  left_join(states_sf, by = join_by(state_fips)) %>%
   st_as_sf()
 
 p_outage <- ggplot() + 
@@ -100,4 +100,99 @@ ggsave(plot = p_two, here('figures/by_state/outage_any_wf.png'), height = 4, wid
 ggsave(plot = p_outage_wfbz, here('figures/by_state/outage_wfbz.png'), height = 4, width = 2)
 ggsave(plot = p_outage_wfs, here('figures/by_state/outage_wfs.png'), height = 4, width = 2)
 ggsave(plot = p_wfbz_wfs, here('figures/by_state/wfbz_wfs.png'), height = 4, width = 2)
+
+
+counties_sf <- tigris::counties(year = 2021, cb = TRUE) %>% 
+  filter(STUSPS %in% c(state.abb, 'DC'), !(STUSPS %in% c('AK', 'HI'))) %>%
+  transmute(
+    county_fips = paste0(STATEFP, COUNTYFP),
+    state_abb = STUSPS,
+    county = NAME
+  )
+
+
+summary_spatial <- ds %>%
+  mutate(state_fips = substr(county_fips, 1, 2)) %>%
+  group_by(county_fips, threshold) %>%
+  summarize(
+    apocalypse = mean(outage & wfbz_affected & wfs_smoke_day_gt10),
+    outage_and_wf = mean(outage & (wfbz_affected | wfs_smoke_day_gt10)),
+    outage_and_wfbz = mean(outage & wfbz_affected),
+    outage_and_wfs = mean(outage & wfs_smoke_day_gt10),
+    wfbz_and_wfs = mean(wfbz_affected & wfs_smoke_day_gt10),
+    outage = mean(outage),
+    wfbz_affected = mean(wfbz_affected),
+    wfs_smoke_day_gt10 = mean(wfs_smoke_day_gt10),
+    .groups = "drop_last"
+  ) %>%
+  left_join(counties_sf, by = join_by(county_fips)) %>%
+  st_as_sf()
+
+p_outage <- ggplot() + 
+  geom_sf(data = summary_spatial, color = NA, aes(fill = outage)) + 
+  facet_wrap(~threshold, ncol = 1) + 
+  scale_fill_distiller(name = 'Mean county outage days', palette = 'Spectral', labels = scales::percent) +
+  theme_void() +
+  ggtitle('Power outages by county')
+
+
+p_wfbz <- ggplot() + 
+  geom_sf(data = summary_spatial, color = NA, aes(fill = wfbz_affected)) + 
+  facet_wrap(~threshold, ncol = 1) + 
+  scale_fill_distiller(name = 'Mean county WFBZ days', palette = 'Spectral', labels = scales::percent) +
+  theme_void() +
+  ggtitle('WFBZ-affected days by county')
+
+p_wfs <- ggplot() + 
+  geom_sf(data = summary_spatial, color = NA, aes(fill = wfs_smoke_day_gt10)) + 
+  facet_wrap(~threshold, ncol = 1) + 
+  scale_fill_distiller(name = 'Mean county smoke days', palette = 'Spectral', labels = scales::percent) +
+  theme_void() +
+  ggtitle('Smoke days (>10µg/m3) by county')
+
+p_all <- ggplot() + 
+  geom_sf(data = summary_spatial, color = NA, aes(fill = apocalypse)) + 
+  facet_wrap(~threshold, ncol = 1) + 
+  scale_fill_distiller(name = 'Mean county apocalypse days', palette = 'Spectral', labels = scales::percent) +
+  theme_void() +
+  ggtitle('Apocalypse days (all three factors) by county')
+
+p_two <- ggplot() + 
+  geom_sf(data = summary_spatial, color = NA, aes(fill = outage_and_wf)) + 
+  facet_wrap(~threshold, ncol = 1) + 
+  scale_fill_distiller(name = 'Mean county outage + WF days', palette = 'Spectral', labels = scales::percent) +
+  theme_void() +
+  ggtitle('Days with outage and either WF metric by county')
+
+p_outage_wfbz <- ggplot() + 
+  geom_sf(data = summary_spatial, color = NA, aes(fill = outage_and_wfbz)) + 
+  facet_wrap(~threshold, ncol = 1) + 
+  scale_fill_distiller(name = 'Mean county outage + WFBZ days', palette = 'Spectral', labels = scales::percent) +
+  theme_void() +
+  ggtitle('Days with outage and WFBZ by county')
+
+p_outage_wfs <- ggplot() + 
+  geom_sf(data = summary_spatial, color = NA, aes(fill = outage_and_wfs)) + 
+  facet_wrap(~threshold, ncol = 1) + 
+  scale_fill_distiller(name = 'Mean county outage + WFS days', palette = 'Spectral', labels = scales::percent) +
+  theme_void() +
+  ggtitle('Days with outage and WFS > 10µg/m3 by county')
+
+p_wfbz_wfs <- ggplot() + 
+  geom_sf(data = summary_spatial, color = NA, aes(fill = wfbz_and_wfs)) + 
+  facet_wrap(~threshold, ncol = 1) + 
+  scale_fill_distiller(name = 'Mean county WFBZ + WFS days', palette = 'Spectral', labels = scales::percent) +
+  theme_void() +
+  ggtitle('Days with WFBZ and WFS > 10µg/m3 by county')
+
+
+dir_create(here('figures/by_county'))
+ggsave(plot = p_outage, here('figures/by_county/outage.png'), height = 4, width = 2)
+ggsave(plot = p_wfbz, here('figures/by_county/wfbz.png'), height = 4, width = 2)
+ggsave(plot = p_wfs, here('figures/by_county/wfs.png'), height = 4, width = 2)
+ggsave(plot = p_all, here('figures/by_county/all.png'), height = 4, width = 2)
+ggsave(plot = p_two, here('figures/by_county/outage_any_wf.png'), height = 4, width = 2)
+ggsave(plot = p_outage_wfbz, here('figures/by_county/outage_wfbz.png'), height = 4, width = 2)
+ggsave(plot = p_outage_wfs, here('figures/by_county/outage_wfs.png'), height = 4, width = 2)
+ggsave(plot = p_wfbz_wfs, here('figures/by_county/wfbz_wfs.png'), height = 4, width = 2)
 

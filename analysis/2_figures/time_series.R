@@ -45,9 +45,9 @@ ds_combos <- read_parquet(here('merged.parquet')) %>%
     day,
     threshold,
     event = case_when(
+      outage & wfbz_affected & wfs_smoke_day_gt10 ~ 'Wildfire, Smoke, and Outage',
       outage & wfs_smoke_day_gt10 ~ 'Smoke and Outage',
       outage & wfbz_affected ~ 'Wildfire and Outage',
-      outage & wfbz_affected & wfs_smoke_day_gt10 ~ 'Wildfire, Smoke, and Outage',
       TRUE ~ NA
     )
   ) %>%
@@ -60,7 +60,7 @@ ds_combos <- read_parquet(here('merged.parquet')) %>%
 
 p <- ggplot(ds_combos) + 
   geom_col(aes(x = day, y = `Counties experiencing event`, fill = event)) + 
-  scale_fill_manual(values = PNWColors::pnw_palette('Sunset2', 2), name = '') +
+  scale_fill_manual(values = PNWColors::pnw_palette('Sunset2', 3), name = '') +
   scale_x_date(breaks = seq.Date(min(ds$day), max(ds$day)+1, by = '4 months'), date_labels = '%b \'%y', name = '') + 
   scale_y_continuous(expand = expansion(add = 0)) + 
   theme_uw() + 
