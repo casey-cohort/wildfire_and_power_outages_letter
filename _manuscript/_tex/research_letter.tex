@@ -67,6 +67,7 @@
 
 
 \usepackage{longtable,booktabs,array}
+\newcounter{none} % for unnumbered tables
 \usepackage{calc} % for calculating minipage widths
 % Correct order of tables after \paragraph or \subparagraph
 \usepackage{etoolbox}
@@ -184,6 +185,10 @@
 \usepackage{bookmark}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
+% fallback for those not using the hyperref driver hyperxmp:
+\makeatletter
+\@ifundefined{xmpquote}{\newcommand{\xmpquote}[1]{#1}}{}
+\makeatother
 \hypersetup{
   pdftitle={Wildfires and Power Outages? How do they interact? Do they interact? Let's find out! (Replace me)},
   colorlinks=true,
@@ -222,7 +227,7 @@ data set(Brelsford et al. 2023), which records the number of customers
 per US county experiencing power outages in 15 minute intervals. We
 aggregated that data to daily intervals, defining a county to be
 affected by power outage on a particular day when at least \textbf{XXX\%
-FIX ME ONCE WE DECIDE} or 5000 customers had been without power for at
+FIX ME ONCE WE DECIDE} or 5,000 customers had been without power for at
 least eight hours. I.e. for a power outage from 10:00 PM on day one to
 6:00 AM on day two, we considered the county to have experienced an
 outage on day two, when the length of the outage first reached eight
@@ -272,7 +277,7 @@ We obtained 100 meter gridded population estimates from the Global Human
 Settlement Layer(Pesaresi et al. 2024), and used these to calculate the
 number of people living within 10 km of each fire and living in each
 county. We considered a county to be affected when at least
-\textbf{XXX\% FIX ME ONCE WE DECIDE} of the county population or 5000
+\textbf{XXX\% FIX ME ONCE WE DECIDE} of the county population or 5,000
 people lived within 10 km of any active disaster fire on that day. This
 data set covered the United States from 2000 through 2025.
 
@@ -304,27 +309,27 @@ December 31, 2024. Each county and day thus had a binary value for:
 
 \emph{Our map is great!}
 
-\phantomsection\label{refs}
-\begin{CSLReferences}{1}{0}
+\subsection{References}\label{references}
+
+\protect\phantomsection\label{refs}
+\begin{CSLReferences}{1}{1}
 \bibitem[\citeproctext]{ref-Brelsford2023}
-Brelsford, Christa, Sarah Tennille, Aaron Myers, Supriya Chinthavali,
-Varisara Tansakul, Matthew Denman, Mark Coletti, et al. 2023. {``{The
+Brelsford, Christa, Sarah Tennille, Aaron Myers, et al. 2023. \emph{{The
 Environment for Analysis of Geo-Located Energy Information's Recorded
-Electricity Outages 2014-2025},''} November.
+Electricity Outages 2014-2025}}. November.
 \url{https://doi.org/10.6084/m9.figshare.24237376.v4}.
 
 \bibitem[\citeproctext]{ref-Childs2025-hu}
 Childs, Marissa, Mariana Martins, Andrew Wilson, Minghao Qiu, Sam
 Heft-Neal, and Marshall Burke. 2025. {``Growing Wildfire-Derived {PM2.5}
 Across the Contiguous {U.S}. And Implications for Air Quality
-Regulation.''} \emph{EarthArXiv}.
+Regulation.''} In \emph{EarthArXiv}. August.
 
 \bibitem[\citeproctext]{ref-Pesaresi2024-aq}
-Pesaresi, Martino, Marcello Schiavina, Panagiotis Politis, Sergio
-Freire, Katarzyna Krasnodębska, Johannes H Uhl, Alessandra Carioli, et
-al. 2024. {``Advances on the Global Human Settlement Layer by Joint
-Assessment of Earth Observation and Population Survey Data.''}
-\emph{Int. J. Digit. Earth} 17 (1).
+Pesaresi, Martino, Marcello Schiavina, Panagiotis Politis, et al. 2024.
+{``Advances on the Global Human Settlement Layer by Joint Assessment of
+Earth Observation and Population Survey Data.''} \emph{Int. J. Digit.
+Earth} 17 (1).
 
 \bibitem[\citeproctext]{ref-Walker2026}
 Walker, Kyle, and Matt Herman. 2026. \emph{Tidycensus: Load US Census
@@ -332,10 +337,9 @@ Boundary and Attribute Data as 'Tidyverse' and 'Sf'-Ready Data Frames}.
 \url{https://walker-data.com/tidycensus/}.
 
 \bibitem[\citeproctext]{ref-Wilner2025-kr}
-Wilner, Lauren B, Logan Piepmeier, Milo Gordon, Benjamin B Steiger,
-Alexander J Northrop, Heather McBrien, Brittany Shea, et al. 2025.
-{``Two and a Half Decades of United States Wildfire Burn Zone Disaster
-Data, 2000-2025.''} \emph{Sci. Data} 12 (1): 1948.
+Wilner, Lauren B, Logan Piepmeier, Milo Gordon, et al. 2025. {``Two and
+a Half Decades of United States Wildfire Burn Zone Disaster Data,
+2000-2025.''} \emph{Sci. Data} 12 (1): 1948.
 
 \end{CSLReferences}
 

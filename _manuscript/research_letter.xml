@@ -1,76 +1,113 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE article PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Archiving
 and Interchange DTD v1.2 20190208//EN" "JATS-archivearticle1.dtd">
+
 <article xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink" dtd-version="1.2" article-type="other">
-  <front>
-    <article-meta>
-      <title-group>
-        <article-title>Wildfires and Power Outages? How do they interact? Do
+
+<front>
+
+
+<article-meta>
+
+
+<title-group>
+<article-title>Wildfires and Power Outages? How do they interact? Do
 they interact? Let’s find out! (Replace me)</article-title>
-      </title-group>
-      <contrib-group>
-        <contrib contrib-type="author" corresp="yes">
-          <name>
-            <surname>McBrien</surname>
-            <given-names>Heather</given-names>
-          </name>
-          <string-name>Heather McBrien</string-name>
-          <xref ref-type="aff" rid="aff-1">a</xref>
-          <xref ref-type="corresp" rid="cor-1">*</xref>
-        </contrib>
-        <contrib contrib-type="author">
-          <name>
-            <surname>Piepmeier</surname>
-            <given-names>Logan</given-names>
-          </name>
-          <string-name>Logan Piepmeier</string-name>
-          <xref ref-type="aff" rid="aff-2">b</xref>
-        </contrib>
-        <contrib contrib-type="author">
-          <name>
-            <surname>Casey</surname>
-            <given-names>Joan</given-names>
-          </name>
-          <string-name>Joan Casey</string-name>
-          <xref ref-type="aff" rid="aff-2">b</xref>
-        </contrib>
-      </contrib-group>
-      <aff id="aff-1">
-        <institution-wrap>
-          <institution>Columbia University</institution>
-        </institution-wrap>
-      </aff>
-      <aff id="aff-2">
-        <institution-wrap>
-          <institution>University of Washington</institution>
-        </institution-wrap>
-      </aff>
-      <author-notes>
-        <corresp id="cor-1"/>
-      </author-notes>
-      <history/>
-    </article-meta>
-  </front>
-  <body>
-    <sec id="abstract">
-      <title>Abstract</title>
-      <p>
-        <italic>Write me.</italic>
-      </p>
-    </sec>
-    <sec id="introduction">
-      <title>Introduction</title>
-      <p>
-        <italic>Write me.</italic>
-      </p>
-    </sec>
-    <sec id="methods">
-      <title>Methods</title>
-      <sec id="data">
-        <title>Data</title>
-        <sec id="power-outages">
-          <title>Power Outages</title>
-          <p>We determined when a county experienced power outage using the
+</title-group>
+
+<contrib-group>
+<contrib contrib-type="author" corresp="yes">
+<name>
+<surname>McBrien</surname>
+<given-names>Heather</given-names>
+</name>
+<string-name>Heather McBrien</string-name>
+
+<xref ref-type="aff" rid="aff-1">a</xref>
+<xref ref-type="corresp" rid="cor-1">&#x002A;</xref>
+</contrib>
+<contrib contrib-type="author">
+<name>
+<surname>Piepmeier</surname>
+<given-names>Logan</given-names>
+</name>
+<string-name>Logan Piepmeier</string-name>
+
+<xref ref-type="aff" rid="aff-2">b</xref>
+</contrib>
+<contrib contrib-type="author">
+<name>
+<surname>Casey</surname>
+<given-names>Joan</given-names>
+</name>
+<string-name>Joan Casey</string-name>
+
+<xref ref-type="aff" rid="aff-2">b</xref>
+</contrib>
+</contrib-group>
+<aff id="aff-1">
+<institution-wrap>
+<institution>Columbia University</institution>
+</institution-wrap>
+
+
+
+
+
+
+
+</aff>
+<aff id="aff-2">
+<institution-wrap>
+<institution>University of Washington</institution>
+</institution-wrap>
+
+
+
+
+
+
+
+</aff>
+<author-notes>
+<corresp id="cor-1"></corresp>
+</author-notes>
+
+
+
+
+
+
+
+
+
+<history></history>
+
+
+
+
+
+
+</article-meta>
+
+</front>
+
+<body>
+<sec id="abstract">
+  <title>Abstract</title>
+  <p><italic>Write me.</italic></p>
+</sec>
+<sec id="introduction">
+  <title>Introduction</title>
+  <p><italic>Write me.</italic></p>
+</sec>
+<sec id="methods">
+  <title>Methods</title>
+  <sec id="data">
+    <title>Data</title>
+    <sec id="power-outages">
+      <title>Power Outages</title>
+      <p>We determined when a county experienced power outage using the
       Environment for the Analysis of Geo-Located Energy Information
       (EAGLE-I) data
       set(<xref alt="Brelsford et al. 2023" rid="ref-Brelsford2023" ref-type="bibr">Brelsford
@@ -78,17 +115,17 @@ they interact? Let’s find out! (Replace me)</article-title>
       county experiencing power outages in 15 minute intervals. We
       aggregated that data to daily intervals, defining a county to be
       affected by power outage on a particular day when at least
-      <bold>XXX% FIX ME ONCE WE DECIDE</bold> or 5000 customers had been
-      without power for at least eight hours. I.e. for a power outage
-      from 10:00 PM on day one to 6:00 AM on day two, we considered the
-      county to have experienced an outage on day two, when the length
-      of the outage first reached eight hours. For a longer outage from
-      8:00 AM on day 1 to 9:00 PM on day two, we considered both days to
-      be affected by outage since day one had accumulated eight
-      consecutive hours of outage by 4:00 PM, and day two had
-      experienced eight consecutive hours as soon as it began on
+      <bold>XXX% FIX ME ONCE WE DECIDE</bold> or 5,000 customers had
+      been without power for at least eight hours. I.e. for a power
+      outage from 10:00 PM on day one to 6:00 AM on day two, we
+      considered the county to have experienced an outage on day two,
+      when the length of the outage first reached eight hours. For a
+      longer outage from 8:00 AM on day 1 to 9:00 PM on day two, we
+      considered both days to be affected by outage since day one had
+      accumulated eight consecutive hours of outage by 4:00 PM, and day
+      two had experienced eight consecutive hours as soon as it began on
       midnight.</p>
-          <p>The total number of customers per county was not available for
+      <p>The total number of customers per county was not available for
       all years. When it was missing, we estimated it by using the
       number of households in the American Community Survey (ACS) for
       that year and county. ACS data for 2025 was not yet available, so
@@ -96,14 +133,14 @@ they interact? Let’s find out! (Replace me)</article-title>
       obtained with the Tidycensus R
       Package(<xref alt="Walker and Herman 2026" rid="ref-Walker2026" ref-type="bibr">Walker
       and Herman 2026</xref>).</p>
-          <p>Although the EAGLE-I data set covers the United States and was
+      <p>Although the EAGLE-I data set covers the United States and was
       available for 2014 through 2025, its geographic coverage improved
       considerably in 2018. We therefore restricted our analysis to 2018
       and later.</p>
-        </sec>
-        <sec id="wildfire-smoke">
-          <title>Wildfire Smoke</title>
-          <p>We determined when a county was affected by wilfire smoke using
+    </sec>
+    <sec id="wildfire-smoke">
+      <title>Wildfire Smoke</title>
+      <p>We determined when a county was affected by wilfire smoke using
       a model of daily ambient PM<sub>2.5</sub> attributable to wildfire
       smoke
       (WFS)(<xref alt="Childs et al. 2025" rid="ref-Childs2025-hu" ref-type="bibr">Childs
@@ -115,12 +152,12 @@ they interact? Let’s find out! (Replace me)</article-title>
       for a smoke day, considering a day to be exposed to WFS only if on
       smoke days with WFS PM<sub>2.5</sub> concentrations of <bold>XXX
       FIX ME</bold> µg/m³ or above.</p>
-          <p>This model covered the continental United States for 2008
+      <p>This model covered the continental United States for 2008
       through 2024.</p>
-        </sec>
-        <sec id="wildfire-burn-zones">
-          <title>Wildfire Burn Zones</title>
-          <p>We determined whether a county was affected by a wildfire
+    </sec>
+    <sec id="wildfire-burn-zones">
+      <title>Wildfire Burn Zones</title>
+      <p>We determined whether a county was affected by a wildfire
       disaster using a data set of wildfire burn zones (WFBZ) for fires
       resulting in at least one death, one destroyed building, or a FEMA
       major disaster declaration
@@ -131,368 +168,176 @@ they interact? Let’s find out! (Replace me)</article-title>
       date, we estimated it to be four days after ignition. Four days
       was the 25th percentile of all known fire durations in the data
       set.</p>
-          <p>We obtained 100 meter gridded population estimates from the
+      <p>We obtained 100 meter gridded population estimates from the
       Global Human Settlement
       Layer(<xref alt="Pesaresi et al. 2024" rid="ref-Pesaresi2024-aq" ref-type="bibr">Pesaresi
       et al. 2024</xref>), and used these to calculate the number of
       people living within 10 km of each fire and living in each county.
       We considered a county to be affected when at least <bold>XXX% FIX
-      ME ONCE WE DECIDE</bold> of the county population or 5000 people
+      ME ONCE WE DECIDE</bold> of the county population or 5,000 people
       lived within 10 km of any active disaster fire on that day. This
       data set covered the United States from 2000 through 2025.</p>
-        </sec>
-        <sec id="combining-data-sets">
-          <title>Combining Data Sets</title>
-          <p>We then merged the three data sets on county and day,
+    </sec>
+    <sec id="combining-data-sets">
+      <title>Combining Data Sets</title>
+      <p>We then merged the three data sets on county and day,
       restricting to days covered by all three input data sets: January
       1, 2018 through December 31, 2024. Each county and day thus had a
       binary value for:</p>
-          <list list-type="bullet">
-            <list-item>
-              <p>power outage</p>
-            </list-item>
-            <list-item>
-              <p>exposure to wildfire smoke</p>
-            </list-item>
-            <list-item>
-              <p>proximity to wildfire disaster</p>
-            </list-item>
-          </list>
-        </sec>
-      </sec>
-      <sec id="visualization">
-        <title>Visualization</title>
-        <p>
-          <italic>We made a pretty map!</italic>
-        </p>
-      </sec>
+      <list list-type="bullet">
+        <list-item>
+          <p>power outage</p>
+        </list-item>
+        <list-item>
+          <p>exposure to wildfire smoke</p>
+        </list-item>
+        <list-item>
+          <p>proximity to wildfire disaster</p>
+        </list-item>
+      </list>
     </sec>
-    <sec id="results">
-      <title>Results</title>
-      <p>
-        <italic>Here is our pretty map!</italic>
-      </p>
-    </sec>
-    <sec id="discussion">
-      <title>Discussion</title>
-      <p>
-        <italic>Our map is great!</italic>
-      </p>
-    </sec>
-  </body>
-  <back>
-    <ref-list>
-      <title/>
-      <ref id="ref-Pesaresi2024-aq">
-        <element-citation publication-type="article-journal">
-          <person-group person-group-type="author">
-            <name>
-              <surname>Pesaresi</surname>
-              <given-names>Martino</given-names>
-            </name>
-            <name>
-              <surname>Schiavina</surname>
-              <given-names>Marcello</given-names>
-            </name>
-            <name>
-              <surname>Politis</surname>
-              <given-names>Panagiotis</given-names>
-            </name>
-            <name>
-              <surname>Freire</surname>
-              <given-names>Sergio</given-names>
-            </name>
-            <name>
-              <surname>Krasnodębska</surname>
-              <given-names>Katarzyna</given-names>
-            </name>
-            <name>
-              <surname>Uhl</surname>
-              <given-names>Johannes H</given-names>
-            </name>
-            <name>
-              <surname>Carioli</surname>
-              <given-names>Alessandra</given-names>
-            </name>
-            <name>
-              <surname>Corbane</surname>
-              <given-names>Christina</given-names>
-            </name>
-            <name>
-              <surname>Dijkstra</surname>
-              <given-names>Lewis</given-names>
-            </name>
-            <name>
-              <surname>Florio</surname>
-              <given-names>Pietro</given-names>
-            </name>
-            <name>
-              <surname>Friedrich</surname>
-              <given-names>Hannah K</given-names>
-            </name>
-            <name>
-              <surname>Gao</surname>
-              <given-names>Jing</given-names>
-            </name>
-            <name>
-              <surname>Leyk</surname>
-              <given-names>Stefan</given-names>
-            </name>
-            <name>
-              <surname>Lu</surname>
-              <given-names>Linlin</given-names>
-            </name>
-            <name>
-              <surname>Maffenini</surname>
-              <given-names>Luca</given-names>
-            </name>
-            <name>
-              <surname>Mari-Rivero</surname>
-              <given-names>Ines</given-names>
-            </name>
-            <name>
-              <surname>Melchiorri</surname>
-              <given-names>Michele</given-names>
-            </name>
-            <name>
-              <surname>Syrris</surname>
-              <given-names>Vasileios</given-names>
-            </name>
-            <name>
-              <surname>Van Den Hoek</surname>
-              <given-names>Jamon</given-names>
-            </name>
-            <name>
-              <surname>Kemper</surname>
-              <given-names>Thomas</given-names>
-            </name>
-          </person-group>
-          <article-title>Advances on the global human settlement layer by joint assessment of earth observation and population survey data</article-title>
-          <source>Int. J. Digit. Earth</source>
-          <publisher-name>Informa UK Limited</publisher-name>
-          <year iso-8601-date="2024-12">2024</year>
-          <month>12</month>
-          <volume>17</volume>
-          <issue>1</issue>
-        </element-citation>
-      </ref>
-      <ref id="ref-Brelsford2023">
-        <element-citation publication-type="article-journal">
-          <person-group person-group-type="author">
-            <name>
-              <surname>Brelsford</surname>
-              <given-names>Christa</given-names>
-            </name>
-            <name>
-              <surname>Tennille</surname>
-              <given-names>Sarah</given-names>
-            </name>
-            <name>
-              <surname>Myers</surname>
-              <given-names>Aaron</given-names>
-            </name>
-            <name>
-              <surname>Chinthavali</surname>
-              <given-names>Supriya</given-names>
-            </name>
-            <name>
-              <surname>Tansakul</surname>
-              <given-names>Varisara</given-names>
-            </name>
-            <name>
-              <surname>Denman</surname>
-              <given-names>Matthew</given-names>
-            </name>
-            <name>
-              <surname>Coletti</surname>
-              <given-names>Mark</given-names>
-            </name>
-            <name>
-              <surname>Grant</surname>
-              <given-names>Joshua</given-names>
-            </name>
-            <name>
-              <surname>Lee</surname>
-              <given-names>Sangkeun</given-names>
-            </name>
-            <name>
-              <surname>Allen</surname>
-              <given-names>Karl</given-names>
-            </name>
-            <name>
-              <surname>Johnson</surname>
-              <given-names>Evelyn</given-names>
-            </name>
-            <name>
-              <surname>Huihui</surname>
-              <given-names>Jonathan</given-names>
-            </name>
-            <name>
-              <surname>Hamaker</surname>
-              <given-names>Alec</given-names>
-            </name>
-            <name>
-              <surname>Newby</surname>
-              <given-names>Scott</given-names>
-            </name>
-            <name>
-              <surname>Medlen</surname>
-              <given-names>Kyle</given-names>
-            </name>
-            <name>
-              <surname>Maguire</surname>
-              <given-names>Dakotah</given-names>
-            </name>
-            <name>
-              <surname>Stahl</surname>
-              <given-names>Chelsey Dunivan</given-names>
-            </name>
-            <name>
-              <surname>Moehl</surname>
-              <given-names>Jessica</given-names>
-            </name>
-            <name>
-              <surname>Redmond</surname>
-              <given-names>Daniel P.</given-names>
-            </name>
-            <name>
-              <surname>Redmon</surname>
-              <given-names>Daniel</given-names>
-            </name>
-            <name>
-              <surname>Sanyal</surname>
-              <given-names>Jibonananda</given-names>
-            </name>
-            <name>
-              <surname>Bhaduri</surname>
-              <given-names>Budhendra</given-names>
-            </name>
-          </person-group>
-          <article-title>The Environment for Analysis of Geo-Located Energy Information’s Recorded Electricity Outages 2014-2025</article-title>
-          <year iso-8601-date="2023-11">2023</year>
-          <month>11</month>
-          <uri>https://figshare.com/articles/dataset/The_Environment_for_Analysis_of_Geo-Located_Energy_Information_s_Recorded_Electricity_Outages_2014-2022/24237376</uri>
-          <pub-id pub-id-type="doi">10.6084/m9.figshare.24237376.v4</pub-id>
-        </element-citation>
-      </ref>
-      <ref id="ref-Childs2025-hu">
-        <element-citation publication-type="manuscript">
-          <person-group person-group-type="author">
-            <name>
-              <surname>Childs</surname>
-              <given-names>Marissa</given-names>
-            </name>
-            <name>
-              <surname>Martins</surname>
-              <given-names>Mariana</given-names>
-            </name>
-            <name>
-              <surname>Wilson</surname>
-              <given-names>Andrew</given-names>
-            </name>
-            <name>
-              <surname>Qiu</surname>
-              <given-names>Minghao</given-names>
-            </name>
-            <name>
-              <surname>Heft-Neal</surname>
-              <given-names>Sam</given-names>
-            </name>
-            <name>
-              <surname>Burke</surname>
-              <given-names>Marshall</given-names>
-            </name>
-          </person-group>
-          <article-title>Growing wildfire-derived PM2.5 across the contiguous U.S. And implications for air quality regulation</article-title>
-          <source>EarthArXiv</source>
-          <year iso-8601-date="2025-08">2025</year>
-          <month>08</month>
-        </element-citation>
-      </ref>
-      <ref id="ref-Wilner2025-kr">
-        <element-citation publication-type="article-journal">
-          <person-group person-group-type="author">
-            <name>
-              <surname>Wilner</surname>
-              <given-names>Lauren B</given-names>
-            </name>
-            <name>
-              <surname>Piepmeier</surname>
-              <given-names>Logan</given-names>
-            </name>
-            <name>
-              <surname>Gordon</surname>
-              <given-names>Milo</given-names>
-            </name>
-            <name>
-              <surname>Steiger</surname>
-              <given-names>Benjamin B</given-names>
-            </name>
-            <name>
-              <surname>Northrop</surname>
-              <given-names>Alexander J</given-names>
-            </name>
-            <name>
-              <surname>McBrien</surname>
-              <given-names>Heather</given-names>
-            </name>
-            <name>
-              <surname>Shea</surname>
-              <given-names>Brittany</given-names>
-            </name>
-            <name>
-              <surname>Meltzer</surname>
-              <given-names>Gabriella Y</given-names>
-            </name>
-            <name>
-              <surname>Bedi</surname>
-              <given-names>Neil Singh</given-names>
-            </name>
-            <name>
-              <surname>Blake</surname>
-              <given-names>Elizabeth M</given-names>
-            </name>
-            <name>
-              <surname>Benmarhnia</surname>
-              <given-names>Tarik</given-names>
-            </name>
-            <name>
-              <surname>Braun</surname>
-              <given-names>Danielle</given-names>
-            </name>
-            <name>
-              <surname>Casey</surname>
-              <given-names>Joan A</given-names>
-            </name>
-          </person-group>
-          <article-title>Two and a half decades of united states wildfire burn zone disaster data, 2000-2025</article-title>
-          <source>Sci. Data</source>
-          <publisher-name>Springer Science; Business Media LLC</publisher-name>
-          <year iso-8601-date="2025-12">2025</year>
-          <month>12</month>
-          <volume>12</volume>
-          <issue>1</issue>
-          <fpage>1948</fpage>
-          <lpage/>
-        </element-citation>
-      </ref>
-      <ref id="ref-Walker2026">
-        <element-citation publication-type="book">
-          <person-group person-group-type="author">
-            <name>
-              <surname>Walker</surname>
-              <given-names>Kyle</given-names>
-            </name>
-            <name>
-              <surname>Herman</surname>
-              <given-names>Matt</given-names>
-            </name>
-          </person-group>
-          <source>Tidycensus: Load US census boundary and attribute data as ’tidyverse’ and ’sf’-ready data frames</source>
-          <year iso-8601-date="2026">2026</year>
-          <uri>https://walker-data.com/tidycensus/</uri>
-        </element-citation>
-      </ref>
-    </ref-list>
-  </back>
+  </sec>
+  <sec id="visualization">
+    <title>Visualization</title>
+    <p><italic>We made a pretty map!</italic></p>
+  </sec>
+</sec>
+<sec id="results">
+  <title>Results</title>
+  <p><italic>Here is our pretty map!</italic></p>
+</sec>
+<sec id="discussion">
+  <title>Discussion</title>
+  <p><italic>Our map is great!</italic></p>
+</sec>
+<sec id="references">
+  <title>References</title>
+</sec>
+</body>
+
+<back>
+<ref-list>
+  <title></title>
+  <ref id="ref-Pesaresi2024-aq">
+    <element-citation publication-type="article-journal">
+      <person-group person-group-type="author">
+        <name><surname>Pesaresi</surname><given-names>Martino</given-names></name>
+        <name><surname>Schiavina</surname><given-names>Marcello</given-names></name>
+        <name><surname>Politis</surname><given-names>Panagiotis</given-names></name>
+        <name><surname>Freire</surname><given-names>Sergio</given-names></name>
+        <name><surname>Krasnodębska</surname><given-names>Katarzyna</given-names></name>
+        <name><surname>Uhl</surname><given-names>Johannes H</given-names></name>
+        <name><surname>Carioli</surname><given-names>Alessandra</given-names></name>
+        <name><surname>Corbane</surname><given-names>Christina</given-names></name>
+        <name><surname>Dijkstra</surname><given-names>Lewis</given-names></name>
+        <name><surname>Florio</surname><given-names>Pietro</given-names></name>
+        <name><surname>Friedrich</surname><given-names>Hannah K</given-names></name>
+        <name><surname>Gao</surname><given-names>Jing</given-names></name>
+        <name><surname>Leyk</surname><given-names>Stefan</given-names></name>
+        <name><surname>Lu</surname><given-names>Linlin</given-names></name>
+        <name><surname>Maffenini</surname><given-names>Luca</given-names></name>
+        <name><surname>Mari-Rivero</surname><given-names>Ines</given-names></name>
+        <name><surname>Melchiorri</surname><given-names>Michele</given-names></name>
+        <name><surname>Syrris</surname><given-names>Vasileios</given-names></name>
+        <name><surname>Van Den Hoek</surname><given-names>Jamon</given-names></name>
+        <name><surname>Kemper</surname><given-names>Thomas</given-names></name>
+      </person-group>
+      <article-title>Advances on the global human settlement layer by joint assessment of earth observation and population survey data</article-title>
+      <source>Int. J. Digit. Earth</source>
+      <publisher-name>Informa UK Limited</publisher-name>
+      <year iso-8601-date="2024-12">2024</year><month>12</month>
+      <volume>17</volume>
+      <issue>1</issue>
+    </element-citation>
+  </ref>
+  <ref id="ref-Brelsford2023">
+    <element-citation publication-type="article-journal">
+      <person-group person-group-type="author">
+        <name><surname>Brelsford</surname><given-names>Christa</given-names></name>
+        <name><surname>Tennille</surname><given-names>Sarah</given-names></name>
+        <name><surname>Myers</surname><given-names>Aaron</given-names></name>
+        <name><surname>Chinthavali</surname><given-names>Supriya</given-names></name>
+        <name><surname>Tansakul</surname><given-names>Varisara</given-names></name>
+        <name><surname>Denman</surname><given-names>Matthew</given-names></name>
+        <name><surname>Coletti</surname><given-names>Mark</given-names></name>
+        <name><surname>Grant</surname><given-names>Joshua</given-names></name>
+        <name><surname>Lee</surname><given-names>Sangkeun</given-names></name>
+        <name><surname>Allen</surname><given-names>Karl</given-names></name>
+        <name><surname>Johnson</surname><given-names>Evelyn</given-names></name>
+        <name><surname>Huihui</surname><given-names>Jonathan</given-names></name>
+        <name><surname>Hamaker</surname><given-names>Alec</given-names></name>
+        <name><surname>Newby</surname><given-names>Scott</given-names></name>
+        <name><surname>Medlen</surname><given-names>Kyle</given-names></name>
+        <name><surname>Maguire</surname><given-names>Dakotah</given-names></name>
+        <name><surname>Stahl</surname><given-names>Chelsey Dunivan</given-names></name>
+        <name><surname>Moehl</surname><given-names>Jessica</given-names></name>
+        <name><surname>Redmond</surname><given-names>Daniel P.</given-names></name>
+        <name><surname>Redmon</surname><given-names>Daniel</given-names></name>
+        <name><surname>Sanyal</surname><given-names>Jibonananda</given-names></name>
+        <name><surname>Bhaduri</surname><given-names>Budhendra</given-names></name>
+      </person-group>
+      <article-title>The Environment for Analysis of Geo-Located Energy Information’s Recorded Electricity Outages 2014-2025</article-title>
+      <year iso-8601-date="2023-11">2023</year><month>11</month>
+      <uri>https://figshare.com/articles/dataset/The_Environment_for_Analysis_of_Geo-Located_Energy_Information_s_Recorded_Electricity_Outages_2014-2022/24237376</uri>
+      <pub-id pub-id-type="doi">10.6084/m9.figshare.24237376.v4</pub-id>
+    </element-citation>
+  </ref>
+  <ref id="ref-Childs2025-hu">
+    <element-citation publication-type="manuscript">
+      <person-group person-group-type="author">
+        <name><surname>Childs</surname><given-names>Marissa</given-names></name>
+        <name><surname>Martins</surname><given-names>Mariana</given-names></name>
+        <name><surname>Wilson</surname><given-names>Andrew</given-names></name>
+        <name><surname>Qiu</surname><given-names>Minghao</given-names></name>
+        <name><surname>Heft-Neal</surname><given-names>Sam</given-names></name>
+        <name><surname>Burke</surname><given-names>Marshall</given-names></name>
+      </person-group>
+      <article-title>Growing wildfire-derived PM2.5 across the contiguous U.S. And implications for air quality regulation</article-title>
+      <source>EarthArXiv</source>
+      <year iso-8601-date="2025-08">2025</year><month>08</month>
+    </element-citation>
+  </ref>
+  <ref id="ref-Wilner2025-kr">
+    <element-citation publication-type="article-journal">
+      <person-group person-group-type="author">
+        <name><surname>Wilner</surname><given-names>Lauren B</given-names></name>
+        <name><surname>Piepmeier</surname><given-names>Logan</given-names></name>
+        <name><surname>Gordon</surname><given-names>Milo</given-names></name>
+        <name><surname>Steiger</surname><given-names>Benjamin B</given-names></name>
+        <name><surname>Northrop</surname><given-names>Alexander J</given-names></name>
+        <name><surname>McBrien</surname><given-names>Heather</given-names></name>
+        <name><surname>Shea</surname><given-names>Brittany</given-names></name>
+        <name><surname>Meltzer</surname><given-names>Gabriella Y</given-names></name>
+        <name><surname>Bedi</surname><given-names>Neil Singh</given-names></name>
+        <name><surname>Blake</surname><given-names>Elizabeth M</given-names></name>
+        <name><surname>Benmarhnia</surname><given-names>Tarik</given-names></name>
+        <name><surname>Braun</surname><given-names>Danielle</given-names></name>
+        <name><surname>Casey</surname><given-names>Joan A</given-names></name>
+      </person-group>
+      <article-title>Two and a half decades of united states wildfire burn zone disaster data, 2000-2025</article-title>
+      <source>Sci. Data</source>
+      <publisher-name>Springer Science; Business Media LLC</publisher-name>
+      <year iso-8601-date="2025-12">2025</year><month>12</month>
+      <volume>12</volume>
+      <issue>1</issue>
+      <fpage>1948</fpage>
+      <lpage></lpage>
+    </element-citation>
+  </ref>
+  <ref id="ref-Walker2026">
+    <element-citation publication-type="book">
+      <person-group person-group-type="author">
+        <name><surname>Walker</surname><given-names>Kyle</given-names></name>
+        <name><surname>Herman</surname><given-names>Matt</given-names></name>
+      </person-group>
+      <source>Tidycensus: Load US census boundary and attribute data as ’tidyverse’ and ’sf’-ready data frames</source>
+      <year iso-8601-date="2026">2026</year>
+      <uri>https://walker-data.com/tidycensus/</uri>
+    </element-citation>
+  </ref>
+</ref-list>
+</back>
+
+
+
 </article>
