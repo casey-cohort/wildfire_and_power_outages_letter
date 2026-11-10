@@ -115,6 +115,7 @@ eaglei <- map(
     # identify hours affected by outage
     eaglei <- eaglei %>%
       select(-matches('^total_customers$')) %>% # this only appears sometimes
+      filter(complete.cases(.)) %>%
       mutate(
         `1%` = (customers_out / est_total_customers) > .01 | customers_out >= 5000, # 1% of the county's customers
         `5%` = (customers_out / est_total_customers) > .05 | customers_out >= 5000, # 5% of the county's customers
